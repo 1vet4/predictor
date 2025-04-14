@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GDP Per Capita Predictor</title>
+</head>
+<body>
+  <h2>Predict GDP Per Capita</h2>
+
+  <form id="gdp-form">
+    <div>
+      <label>NGDPRPPPPC 2018:</label>
+      <input type="number" step="any" name="WEO subject_NGDPRPPPPC_2018" required>
+    </div>
+    <div>
+      <label>NGDPRPPPPC 2017:</label>
+      <input type="number" step="any" name="WEO subject_NGDPRPPPPC_2017" required>
+    </div>
+    <div>
+      <label>NGDPRPPPPC 2016:</label>
+      <input type="number" step="any" name="WEO subject_NGDPRPPPPC_2016" required>
+    </div>
+    <div>
+      <label>NGDPRPPPPC 2015:</label>
+      <input type="number" step="any" name="WEO subject_NGDPRPPPPC_2015" required>
+    </div>
+    <div>
+      <label>NGDPRPPPPC 2014:</label>
+      <input type="number" step="any" name="WEO subject_NGDPRPPPPC_2014" required>
+    </div>
+    <button type="submit">Predict</button>
+  </form>
+
+  <h3 id="result"></h3>
+
+  <script>
+    const form = document.getElementById('gdp-form');
+    const resultDiv = document.getElementById('result');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const formData = new FormData(form);
+      const jsonData = {};
+      formData.forEach((value, key) => {
+        jsonData[key] = parseFloat(value);
+      });
+      console.log(jsonData)
+
+      const response = await fetch('/predict_gdp', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData)
+      });
+
+      const result = await response.json();
+
+      console.log(result)
+      if (response.ok) {
+        resultDiv.innerText = `Predicted GDP per capita: ${result.prediction}`;
+      } else {
+        resultDiv.innerText = `Error: ${result.error}`;
+      }
+    });
+  </script>
+</body>
+</html>
